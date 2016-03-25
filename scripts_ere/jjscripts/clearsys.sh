@@ -34,20 +34,20 @@ if [ "${cur_root}" == "${pers}" ]
     then
         future_root="vg0-root_one"
     else
-        if [ $(date +%u) -eq 5 -a $(ls|grep `date +%F`|wc -l) -eq 0 ]
-          then
-#update in chroot etalon root partition
-            mount $prefix$pers /mnt/src
-            mount -o bind /dev /mnt/src/dev
-            mount -t proc proc /mnt/src/proc
-            mount -o bind /boot /mnt/src/boot
-            chroot /mnt/src /bin/bash -c "source /etc/profile && apt-get -y update && apt-get -y upgrade"
-            sleep 10
-            umount /mnt/src/dev
-            umount /mnt/src/proc
-            umount /mnt/src/boot
-            umount /mnt/src
-        fi
+#         if [ $(date +%u) -eq 5 -a $(ls|grep `date +%F`|wc -l) -eq 0 ]
+#           then
+# #update in chroot etalon root partition
+#             mount $prefix$pers /mnt/src
+#             mount -o bind /dev /mnt/src/dev
+#             mount -t proc proc /mnt/src/proc
+#             mount -o bind /boot /mnt/src/boot
+#             chroot /mnt/src /bin/bash -c "source /etc/profile && apt-get -y update && apt-get -y upgrade"
+#             sleep 10
+#             umount /mnt/src/dev
+#             umount /mnt/src/proc
+#             umount /mnt/src/boot
+#             umount /mnt/src
+#         fi
 ########################################################################################	
 #determine current and future partitions
         for pos_root in ${pos_roots}
