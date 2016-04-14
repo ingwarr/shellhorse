@@ -70,7 +70,12 @@ umount /mnt/src
 #change root partition in new /etc/fstab
 echo "Changing configuration files"
 sleep 5
-sed -i "s/${pers}/${future_root}/g" /mnt/dst/etc/fstab
+if [ ${restore} -eq  1 ]
+    then
+        sed -i "s/${cur_root}/${future_root}/g" /mnt/dst/etc/fstab
+    else
+        sed -i "s/${pers}/${future_root}/g" /mnt/dst/etc/fstab
+fi
 sed -i "s/${cur_root_uuid}/${future_root_uuid}/g" /boot/grub/grub.cfg
 sed -i "s/${cur_root}/${future_root}/g" /boot/grub/grub.cfg
 umount /mnt/dst
