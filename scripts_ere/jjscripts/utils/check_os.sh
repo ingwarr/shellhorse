@@ -17,18 +17,24 @@
 #      REVISION:  ---
 #===============================================================================
 
+check_os()
+{
+
 OS_TYPE=`cat /etc/os-release | grep PRETTY_NAME | cut -d'"' -f2`
 
 case ${OS_TYPE} in
 
   "Ubuntu 14.04.4 LTS")
-		echo "INFO: ${OS_TYPE} is supported OS."
+		echo "[INFO]: ${OS_TYPE} is supported OS."
+		return 1
 		;;
   "CentOS Linux 7 (Core)")
-                echo "INFO: ${OS_TYPE} is supported OS."
+                echo "[INFO]: ${OS_TYPE} is supported OS."
+		return 2
                 ;;
   *) 
-		echo "ERROR: ${OS_TYPE} isn't supported OS."
+		echo "[ERROR]: ${OS_TYPE} isn't supported OS."
 		exit
 		;;
 esac
+}
