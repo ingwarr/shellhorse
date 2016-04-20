@@ -54,7 +54,7 @@ fi
 
 while [ "$1" != "" ]; do
     case $1 in
-        --conf-file )       shift
+        --conf )       shift
                        CONFIG_FILE=$1
                        ;;
     esac
