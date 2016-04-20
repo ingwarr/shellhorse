@@ -9,7 +9,7 @@ usage ()
   exit
 }
 
-#let AMOUNT_INPUT_PARAMS=$#
+let AMOUNT_INPUT_PARAMS=$#
 
 #if [ "$AMOUNT_INPUT_PARAMS" -ge 4 ]
 #then
