@@ -18,6 +18,14 @@
 #      REVISION:  ---
 #===============================================================================
 
+source utils/check_os.sh
+
+#SHOULD BE REVIEWED
+
+source utils/check_lvm_centos.sh
+source utils/check_lvm_ubuntu.sh
+
+
 usage ()
 {
   echo 'Usage : ./multi-root-main.sh' 
@@ -27,7 +35,7 @@ usage ()
 
 config_error()
 {
-  echo "ERROR. Please check your configuration file as it seems something hasn't been defined."
+  echo "[ERROR]: Please check your configuration file as it seems something hasn't been defined."
   exit
 }
 
@@ -64,7 +72,7 @@ if [ -s "${CONFIG_FILE}" ]
 then
 	CONFIG_OPTIONS=`cat ${CONFIG_FILE}`
 else
-	echo "Please provide correct path to the configuration file as ${CONFIG_FILE} file doesn't exist or empty"
+	echo "[ERROR]: Please provide correct path to the configuration file as ${CONFIG_FILE} file doesn't exist or empty"
 fi
 
 source ${CONFIG_FILE}
@@ -81,34 +89,69 @@ then
     config_error
 fi
 
-case ${JOB_MODE} in
-  upgrade)
-		echo "Running upgrade mode"
-		;;
-  backup)
-                echo "Running backup mode"
-                ;;
-  list)
-                echo "Running list mode"
-                ;;
-  restore)
-                echo "Running restore mode"
-                ;;
-  standart)
-                echo "Running standart mode"
-                ;;
-  deploy)
-                echo "Running deploy mode"
-                ;;
-  *)  
-      echo "ERROR: ${JOB_MODE} mode isn't supported. Please check your configuration file." 
+if [ "${BLOCK_DEVICE_PROVIDER}" = "" ]
+then
+    config_error
+fi
+
+case ${BLOCK_DEVICE_PROVIDER} in
+  lvm2)
+	echo "[INFO] ${BLOCK_DEVICE_PROVIDER} will be used as block device provider"
+	;;
+  ceph)
+	echo "[INFO] ${BLOCK_DEVICE_PROVIDER} will be used as block device provider"
+	;;
+   *)  
+      echo "[ERROR]: ${BLOCK_DEVICE_PROVIDER} block device provider isn't supported. Please check your configuration file." 
       exit
       ;; 
 esac
 
+case ${JOB_MODE} in
+  upgrade)
+		echo "[INFO]: Running upgrade mode"
+		check_os
+		OS=$?
+		case ${OS} in
+		  1) # 1 - means UBUNTU
+			if [ "${BLOCK_DEVICE_PROVIDER}" == "lvm2" ]; then
+				check_lvm2_ubuntu		
+			elif [ "${BLOCK_DEVICE_PROVIDER}" == "ceph" ]; then
+				echo "[ERROR]: Sorry, ${BLOCK_DEVICE_PROVIDER} functionality hasn't been implemented yet."
+			fi
+			;;
+		  2) # 2 - means CENTOS
+                       if [ "${BLOCK_DEVICE_PROVIDER}" == "lvm2" ]; then
+				check_lvm2_centos
+                        elif [ "${BLOCK_DEVICE_PROVIDER}" == "ceph" ]; then
+                                echo "[ERROR]: Sorry, ${BLOCK_DEVICE_PROVIDER} functionality hasn't been implemented yet."
+                        fi
+                        ;;
+		esac
+		;;
+  backup)
+                echo "[INFO]: Running backup mode"
+                ;;
+  list)
+                echo "[INFO]: Running list mode"
+                ;;
+  restore)
+                echo "[INFO]: Running restore mode"
+                ;;
+  standart)
+                echo "[INFO]: Running standart mode"
+                ;;
+  deploy)
+                echo "[INFO]: Running deploy mode. Checking local.conf and git link"
+                ;;
+  *)  
+      echo "[ERROR]: ${JOB_MODE} mode isn't supported. Please check your configuration file." 
+      exit
+      ;; 
+esac
 
-echo "USER-ID from config is ${USER_ID} JOB_MODE=${JOB_MODE} GIT_LINK=${GIT_LINK} IF_DEPLOYMENT_FAIL_JOB=${IF_DEPLOYMENT_FAIL_JOB}"
-echo "CONFIG FILE = ${CONFIG_FILE}"
+echo "[DEBUG]: USER-ID from config is ${USER_ID} JOB_MODE=${JOB_MODE} GIT_LINK=${GIT_LINK} IF_DEPLOYMENT_FAIL_JOB=${IF_DEPLOYMENT_FAIL_JOB}"
+echo "[DEBUG]: CONFIG FILE = ${CONFIG_FILE}"
 
 
 
