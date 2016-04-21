@@ -31,5 +31,6 @@ for st_pool in ${st_pools}
       pool_path=`virsh pool-dumpxml ${st_pool} |awk 'BEGIN {FS="<|>"} /path/ {print $3}'`
       free_space=`df --output=avail ${pool_path}|grep -v Avail`
       let "free_space /= 1024"
-      echo "Free space in ${st_pool} pool is ${free_space} MB"
+      let "free_space /= 1024"
+      echo "Free space in ${st_pool} pool is ${free_space} GB"
     done
