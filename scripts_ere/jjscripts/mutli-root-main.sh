@@ -77,7 +77,7 @@ fi
 
 source ${CONFIG_FILE}
 
-#Mandatory parameters are defined in configuration file
+# Mandatory configuration parameters are defined in configuration file
 
 if [ "${USER_ID}" = "" ]
 then
@@ -94,6 +94,7 @@ then
     config_error
 fi
 
+# Block device provider review
 case ${BLOCK_DEVICE_PROVIDER} in
   lvm2)
 	echo "[INFO] ${BLOCK_DEVICE_PROVIDER} will be used as block device provider"
@@ -107,27 +108,30 @@ case ${BLOCK_DEVICE_PROVIDER} in
       ;; 
 esac
 
+check_os
+OS=$?
+case ${OS} in
+   1) # 1 - means UBUNTU
+        if [ "${BLOCK_DEVICE_PROVIDER}" == "lvm2" ]; then
+              	check_lvm2_ubuntu
+        elif [ "${BLOCK_DEVICE_PROVIDER}" == "ceph" ]; then
+               	echo "[ERROR]: Sorry, ${BLOCK_DEVICE_PROVIDER} functionality hasn't been implemented yet."
+		exit
+        fi
+        ;;
+   2) # 2 - means CENTOS
+        if [ "${BLOCK_DEVICE_PROVIDER}" == "lvm2" ]; then
+              	check_lvm2_centos
+        elif [ "${BLOCK_DEVICE_PROVIDER}" == "ceph" ]; then
+              	echo "[ERROR]: Sorry, ${BLOCK_DEVICE_PROVIDER} functionality hasn't been implemented yet."
+		exit
+        fi
+              ;;
+esac
+
 case ${JOB_MODE} in
   upgrade)
 		echo "[INFO]: Running upgrade mode"
-		check_os
-		OS=$?
-		case ${OS} in
-		  1) # 1 - means UBUNTU
-			if [ "${BLOCK_DEVICE_PROVIDER}" == "lvm2" ]; then
-				check_lvm2_ubuntu		
-			elif [ "${BLOCK_DEVICE_PROVIDER}" == "ceph" ]; then
-				echo "[ERROR]: Sorry, ${BLOCK_DEVICE_PROVIDER} functionality hasn't been implemented yet."
-			fi
-			;;
-		  2) # 2 - means CENTOS
-                       if [ "${BLOCK_DEVICE_PROVIDER}" == "lvm2" ]; then
-				check_lvm2_centos
-                        elif [ "${BLOCK_DEVICE_PROVIDER}" == "ceph" ]; then
-                                echo "[ERROR]: Sorry, ${BLOCK_DEVICE_PROVIDER} functionality hasn't been implemented yet."
-                        fi
-                        ;;
-		esac
 		;;
   backup)
                 echo "[INFO]: Running backup mode"
@@ -150,7 +154,7 @@ case ${JOB_MODE} in
       ;; 
 esac
 
-echo "[DEBUG]: USER-ID from config is ${USER_ID} JOB_MODE=${JOB_MODE} GIT_LINK=${GIT_LINK} IF_DEPLOYMENT_FAIL_JOB=${IF_DEPLOYMENT_FAIL_JOB}"
+echo "[DEBUG]: USER-ID from config is ${USER_ID} | JOB_MODE=${JOB_MODE} | GIT_LINK=${GIT_LINK} | IF_DEPLOYMENT_FAIL_JOB=${IF_DEPLOYMENT_FAIL_JOB} | BLOCK_DEVICE_PROVIDER=${BLOCK_DEVICE_PROVIDER} | OS=${OS}"
 echo "[DEBUG]: CONFIG FILE = ${CONFIG_FILE}"
 
 
