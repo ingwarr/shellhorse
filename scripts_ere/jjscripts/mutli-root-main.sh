@@ -24,7 +24,7 @@ source utils/check_os.sh
 
 source utils/check_lvm_centos.sh
 source utils/check_lvm_ubuntu.sh
-
+source utils/vg_lv_check.sh
 
 usage ()
 {
@@ -114,6 +114,7 @@ case ${OS} in
    1) # 1 - means UBUNTU
         if [ "${BLOCK_DEVICE_PROVIDER}" == "lvm2" ]; then
               	check_lvm2_ubuntu
+		vg_lv_check
         elif [ "${BLOCK_DEVICE_PROVIDER}" == "ceph" ]; then
                	echo "[ERROR]: Sorry, ${BLOCK_DEVICE_PROVIDER} functionality hasn't been implemented yet."
 		exit
@@ -122,6 +123,7 @@ case ${OS} in
    2) # 2 - means CENTOS
         if [ "${BLOCK_DEVICE_PROVIDER}" == "lvm2" ]; then
               	check_lvm2_centos
+		vg_lv_check
         elif [ "${BLOCK_DEVICE_PROVIDER}" == "ceph" ]; then
               	echo "[ERROR]: Sorry, ${BLOCK_DEVICE_PROVIDER} functionality hasn't been implemented yet."
 		exit
