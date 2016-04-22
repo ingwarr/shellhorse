@@ -18,13 +18,14 @@
 #      REVISION:  ---
 #===============================================================================
 
-source utils/check_os.sh
+BASE_DIR=$(dirname "$0")
+source ${BASE_DIR}/utils/check_os.sh
 
 #SHOULD BE REVIEWED
 
-source utils/check_lvm_centos.sh
-source utils/check_lvm_ubuntu.sh
-source utils/vg_lv_check.sh
+source ${BASE_DIR}/utils/check_lvm_centos.sh
+source ${BASE_DIR}/utils/check_lvm_ubuntu.sh
+source ${BASE_DIR}/utils/vg_lv_check.sh
 
 usage ()
 {
@@ -144,8 +145,8 @@ case ${JOB_MODE} in
   restore)
                 echo "[INFO]: Running restore mode"
                 ;;
-  standart)
-                echo "[INFO]: Running standart mode"
+  standard)
+                echo "[INFO]: Running standard mode"
                 ;;
   deploy)
                 echo "[INFO]: Running deploy mode. Checking local.conf and git link"
@@ -157,7 +158,7 @@ case ${JOB_MODE} in
 esac
 
 echo "[DEBUG]: USER-ID from config is ${USER_ID} | JOB_MODE=${JOB_MODE} | GIT_LINK=${GIT_LINK} | IF_DEPLOYMENT_FAIL_JOB=${IF_DEPLOYMENT_FAIL_JOB} | BLOCK_DEVICE_PROVIDER=${BLOCK_DEVICE_PROVIDER} | OS=${OS}"
-echo "[DEBUG]: CONFIG FILE = ${CONFIG_FILE}"
+echo "[DEBUG]: CONFIG FILE = ${CONFIG_FILE} LV_PARTITIONS_LIST=${LV_PARTITIONS_LIST}"
 
 
 
