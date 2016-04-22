@@ -1,6 +1,22 @@
-#DELETE!!!!!!!!!!!
-#VG="vg0"
-#LV_PARTITIONS_LIST="root_standard root_one root_two opt_vol"
+#===============================================================================
+#
+#          FILE:  vg_lv_check.sh
+#
+#         USAGE:  ./vg_lv_check.sh
+#
+#   DESCRIPTION:
+#
+#       OPTIONS:  ---
+#  REQUIREMENTS:  ---
+#          BUGS:  ---
+#         NOTES:  ---
+#        AUTHOR:  Vitalii Nogin vnogin@mirantis.com
+#       COMPANY:  Mirantis Inc.
+#       VERSION:  1.0
+#       CREATED:  22/04/2016 13:54:01 PM MDT
+#      REVISION:  ---
+#===============================================================================
+
 vg_lv_check()
 {
 # Check free space in volume group

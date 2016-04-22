@@ -1,3 +1,22 @@
+#===============================================================================
+#
+#          FILE:  check_lvm2_centos.sh
+#
+#         USAGE:  ./check_lvm2_centos.sh
+#
+#   DESCRIPTION:
+#
+#       OPTIONS:  ---
+#  REQUIREMENTS:  ---
+#          BUGS:  ---
+#         NOTES:  ---
+#        AUTHOR:  Vitalii Nogin vnogin@mirantis.com
+#       COMPANY:  Mirantis Inc.
+#       VERSION:  1.0
+#       CREATED:  21/04/2016 12:35:01 PM MDT
+#      REVISION:  ---
+#===============================================================================
+
 check_lvm2_centos()
 {
 # LVM2 package is installed check 
