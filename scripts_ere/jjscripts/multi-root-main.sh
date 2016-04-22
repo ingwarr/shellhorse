@@ -135,6 +135,7 @@ esac
 case ${JOB_MODE} in
   upgrade)
 		echo "[INFO]: Running upgrade mode"
+		upgrade_standard_ubuntu
 		;;
   backup)
                 echo "[INFO]: Running backup mode"

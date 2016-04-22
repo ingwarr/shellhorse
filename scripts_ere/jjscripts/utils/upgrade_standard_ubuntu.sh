@@ -17,8 +17,8 @@
 #      REVISION:  ---
 #===============================================================================
 
-#!/bin/bash
-
+upgrade_standard_ubuntu()
+{
 MAPPER="/dev/mapper/"
 #update in chroot etalon root partition
             mount ${MAPPER}${LV_ROOT_STANDART} $BASE_DIR/mnt
@@ -34,4 +34,5 @@ MAPPER="/dev/mapper/"
 	    umount $BASE_DIR/mnt/run
             umount $BASE_DIR/mnt
 
-echo "Standard ubuntu partition updated..."
+echo "[INFO]: Standard ubuntu partition updated..."
+}
