@@ -1,10 +1,9 @@
 #DELETE!!!!!!!!!!!
-# ADD FLAG for mandotory LV
-#
-VG="vg0"
-LV_PARTITIONS_LIST="root_standard root_one root_two opt_vol"
+#VG="vg0"
+#LV_PARTITIONS_LIST="root_standard root_one root_two opt_vol"
+vg_lv_check()
+{
 # Check free space in volume group
-
 VG_FREE_SPACE=`vgs ${VG} --units b -o vg_free --noheadings --nosuffix 2>/dev/null | sed 's/^[ ]*//'`
 
 if [ ! -z ${VG_FREE_SPACE} ]; then
@@ -16,7 +15,6 @@ fi
 
 LV_LIST=`lvs ${VG} -o lv_name --noheadings | sed 's/^[ ]*//'`
 
-#if [ ! -z ${LV_LIST} ]; then
 if [ "${LV_LIST}" != "" ]; then
 	MANDATORY_STATE="true"
 	for MANDATORY_LV in ${LV_PARTITIONS_LIST} 
@@ -42,3 +40,4 @@ if [ "${LV_LIST}" != "" ]; then
 else
 	echo "[ERROR]: There isn't any logical partition in ${VG} volume group. Please create them."
 fi
+}
