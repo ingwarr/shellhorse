@@ -21,7 +21,7 @@ upgrade_standard_ubuntu()
 {
 MAPPER="/dev/mapper/"
 #update in chroot etalon root partition
-            mount ${MAPPER}${LV_ROOT_STANDART} $BASE_DIR/mnt
+            mount "${MAPPER}${VG}-${LV_ROOT_STANDART}" $BASE_DIR/mnt
             mount -o bind /dev $BASE_DIR/mnt/dev
             mount -t proc proc $BASE_DIR/mnt/proc
             mount -o bind /boot $BASE_DIR/mnt/boot
