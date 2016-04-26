@@ -5,7 +5,7 @@ VG="vg0"
 HOSTNAME=`hostname`
 USER_ID="shadoff"
 BASE_DIR="/home/work/multi-root/shellhorse/scripts_ere/jjscripts"
-
+MAPPER="/dev/mapper/"
 
 if [ -z ${BUILD_NUMBER+x} ]
 then
@@ -40,7 +40,7 @@ fi
 
 echo "[INFO]: Creating new backup of DevStack environment"
 mkdir -p "${BACKUP_FULL_PATH}"
-mount "${LV_CURRENT_ROOT}" "$BASE_DIR/mnt/source_fs"
+mount "${MAPPER}${LV_CURRENT_ROOT}" "$BASE_DIR/mnt/source_fs"
 rsync -av --delete --exclude "/dev/*" "$BASE_DIR/mnt/source_fs/" "${BACKUP_FULL_PATH}/"
 mv /opt/stack "${BACKUP_FULL_PATH}_stack"
 umount "$BASE_DIR/mnt/source_fs/"
