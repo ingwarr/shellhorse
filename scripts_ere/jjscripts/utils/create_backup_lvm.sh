@@ -33,7 +33,7 @@ fi
 
 echo "[INFO]: Creating new backup of DevStack environment"
 mkdir -p "${BACKUP_FULL_PATH}"
-if [ mount "${MAPPER}${LV_CURRENT_ROOT}" "$BASE_DIR/mnt/source_fs" ]; then
+if [ `mount "${MAPPER}${LV_CURRENT_ROOT}" "$BASE_DIR/mnt/source_fs"` ]; then
 	echo "[INFO]: ${MAPPER}${LV_CURRENT_ROOT} has been mounted to $BASE_DIR/mnt/source_fs folder."
 else
 	echo "[ERROR]:${MAPPER}${LV_CURRENT_ROOT} hasn't been mounted to $BASE_DIR/mnt/source_fs folder."
