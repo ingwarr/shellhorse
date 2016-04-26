@@ -34,14 +34,14 @@ fi
 echo "[INFO]: Creating new backup of DevStack environment"
 mkdir -p "${BACKUP_FULL_PATH}"
 mount "${MAPPER}${LV_CURRENT_ROOT}" "$BASE_DIR/mnt/source_fs"
-if [ `rsync -av --delete --exclude "/dev/*" "$BASE_DIR/mnt/source_fs/" "${BACKUP_FULL_PATH}/rootfs"` ]; then
+if [ `rsync -av --delete --exclude "/dev/*" "$BASE_DIR/mnt/source_fs/" "${BACKUP_FULL_PATH}/rootfs" 1>/dev/null` ]; then
 	echo "[INFO]: Root file system has been stored under ${BACKUP_FULL_PATH}/rootfs folder."
 else
 	echo "[ERROR]: Root file system hasn't been stored."
 	exit
 fi
 
-if [ `rsync -av --delete ${USER_FOLDER} "${BACKUP_FULL_PATH}/userdata"` ]; then
+if [ `rsync -av --delete ${USER_FOLDER} "${BACKUP_FULL_PATH}/userdata" 1>/dev/null` ]; then
 	echo "[INFO]: User's data folder has been stored under ${BACKUP_FULL_PATH}/userdata folder."
 else
         echo "[ERROR]: User's data folder hasn't been stored."
