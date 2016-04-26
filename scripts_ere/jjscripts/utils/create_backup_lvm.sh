@@ -1,12 +1,5 @@
-LV_ROOT_STANDARD="root_standard"
-LV_ROOT_FIRST="root_one"
-LV_ROOT_SECOND="root_two"
-VG="vg0"
-HOSTNAME=`hostname`
-USER_ID="shadoff"
-BASE_DIR="/home/work/multi-root/shellhorse/scripts_ere/jjscripts"
-MAPPER="/dev/mapper/"
-
+create_backup_lvm()
+{
 if [ -z ${BUILD_NUMBER+x} ]
 then
     JOBSTAMP=`date +%F-%H-%M`
@@ -41,10 +34,20 @@ fi
 echo "[INFO]: Creating new backup of DevStack environment"
 mkdir -p "${BACKUP_FULL_PATH}"
 mount "${MAPPER}${LV_CURRENT_ROOT}" "$BASE_DIR/mnt/source_fs"
-rsync -av --delete --exclude "/dev/*" "$BASE_DIR/mnt/source_fs/" "${BACKUP_FULL_PATH}/"
-mv /opt/stack "${BACKUP_FULL_PATH}_stack"
+if [ `rsync -av --delete --exclude "/dev/*" "$BASE_DIR/mnt/source_fs/" "${BACKUP_FULL_PATH}/rootfs"` ]; then
+	echo "[INFO]: Root file system has been stored under ${BACKUP_FULL_PATH}/rootfs folder."
+else
+	echo "[ERROR]: Root file system hasn't been stored."
+	exit
+fi
+
+if [ `rsync -av --delete ${USER_FOLDER} "${BACKUP_FULL_PATH}/userdata"` ]
+	echo "[INFO]: User's data folder has been stored under ${BACKUP_FULL_PATH}/userdata folder."
+else
+        echo "[ERROR]: User's data folder hasn't been stored."
+        exit
+fi
+
 umount "$BASE_DIR/mnt/source_fs/"
-
-cp -r /opt/skelstack/ /opt/stack/
-chown -R stack:stack /opt/stack
-
+echo "[INFO]: Backup has been finished"
+}

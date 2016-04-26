@@ -144,6 +144,7 @@ case ${JOB_MODE} in
 		;;
   backup)
                 echo "[INFO]: Running backup mode"
+		create_backup_lvm
                 ;;
   list)
                 echo "[INFO]: Running list mode"
