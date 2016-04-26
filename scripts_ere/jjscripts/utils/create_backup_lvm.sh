@@ -41,7 +41,7 @@ else
 	exit
 fi
 
-if [ `rsync -av --delete ${USER_FOLDER} "${BACKUP_FULL_PATH}/userdata"` ]
+if [ `rsync -av --delete ${USER_FOLDER} "${BACKUP_FULL_PATH}/userdata"` ]; then
 	echo "[INFO]: User's data folder has been stored under ${BACKUP_FULL_PATH}/userdata folder."
 else
         echo "[ERROR]: User's data folder hasn't been stored."
