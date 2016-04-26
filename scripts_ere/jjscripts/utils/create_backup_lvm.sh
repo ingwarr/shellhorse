@@ -44,9 +44,12 @@ fi
 rsync -av --delete --exclude "/dev/*" "$BASE_DIR/mnt/source_fs/" "${BACKUP_FULL_PATH}/rootfs" 1>/dev/null
 if [ $? -eq 0 ]; then
 	echo "[INFO]: Root file system has been stored under ${BACKUP_FULL_PATH}/rootfs folder."
+	umount "${BASE_DIR}/mnt/source_fs/"
+	echo "[INFO]: ${BASE_DIR}/mnt/source_fs/ mount point has been umounted"
 else
 	echo "[ERROR]: Root file system hasn't been stored."
-	
+	umount "${BASE_DIR}/mnt/source_fs/"
+	echo "[INFO]: ${BASE_DIR}/mnt/source_fs/ mount point has been umounted"
 	exit
 fi
 
@@ -58,6 +61,5 @@ else
         exit
 fi
 
-umount "$BASE_DIR/mnt/source_fs/"
 echo "[INFO]: Backup has been finished"
 }
