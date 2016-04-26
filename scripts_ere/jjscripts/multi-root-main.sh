@@ -29,6 +29,7 @@ source ${BASE_DIR}/utils/check_lvm_centos.sh
 source ${BASE_DIR}/utils/check_lvm_ubuntu.sh
 source ${BASE_DIR}/utils/upgrade_standard_ubuntu.sh
 source ${BASE_DIR}/utils/vg_lv_check.sh
+source ${BASE_DIR}/utils/create_backup_lvm.sh
 #----------------------------------------------
 ##################################################
 
