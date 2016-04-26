@@ -30,6 +30,7 @@ source ${BASE_DIR}/utils/check_lvm_ubuntu.sh
 source ${BASE_DIR}/utils/upgrade_standard_ubuntu.sh
 source ${BASE_DIR}/utils/vg_lv_check.sh
 source ${BASE_DIR}/utils/create_backup_lvm.sh
+source ${BASE_DIR}/utils/list_backups.sh
 #----------------------------------------------
 ##################################################
 
@@ -150,6 +151,7 @@ case ${JOB_MODE} in
                 ;;
   list)
                 echo "[INFO]: Running list mode"
+		list_backups
                 ;;
   restore)
                 echo "[INFO]: Running restore mode"

@@ -18,23 +18,9 @@ else
 	exit
 fi
 
-#Determine current and future partitions
-if [ "${LV_CURRENT_ROOT}" == "${VG}-${LV_ROOT_STANDARD}" ]; then
-        LV_FUTURE_ROOT="${VG}-${LV_ROOT_FIRST}"
-else
-	for LV_POSITIONAL_ROOT in ${LV_POSITIONAL_ROOTS}
-        do
-           if [ "${LV_POSITIONAL_ROOT}" != "${LV_CURRENT_ROOT}" ]; then
-               LV_FUTURE_ROOT=${LV_POSITIONAL_ROOT}
-               echo "[INFO]: New root will be ${LV_FUTURE_ROOT}"
-           fi
-        done
-fi
-
 echo "[INFO]: Creating new backup of DevStack environment"
 mkdir -p "${BACKUP_FULL_PATH}/rootfs"
 mkdir -p "${BACKUP_FULL_PATH}/userdata"
-echo ${BASE_DIR}
 mount "${MAPPER}${LV_CURRENT_ROOT}" "${BASE_DIR}/mnt/source_fs"
 if [ $? -eq 0 ]; then
 	echo "[INFO]: ${MAPPER}${LV_CURRENT_ROOT} has been mounted to ${BASE_DIR}/mnt/source_fs folder."
@@ -42,6 +28,8 @@ else
 	echo "[ERROR]:${MAPPER}${LV_CURRENT_ROOT} hasn't been mounted to ${BASE_DIR}/mnt/source_fs folder."
 	exit
 fi
+
+echo "[INFO]: RSYNCing $BASE_DIR/mnt/source_fs/ to ${BACKUP_FULL_PATH}/rootfs"
 rsync -av --delete --exclude "/dev/*" "$BASE_DIR/mnt/source_fs/" "${BACKUP_FULL_PATH}/rootfs" 1>/dev/null
 if [ $? -eq 0 ]; then
 	echo "[INFO]: Root file system has been stored under ${BACKUP_FULL_PATH}/rootfs folder."
@@ -54,6 +42,7 @@ else
 	exit
 fi
 
+echo "[INFO]: RSYNCing ${USER_FOLDER} to ${BACKUP_FULL_PATH}/userdata"
 rsync -av --delete ${USER_FOLDER} "${BACKUP_FULL_PATH}/userdata" 1>/dev/null
 if [ $? -eq 0 ]; then
 	echo "[INFO]: User's data folder has been stored under ${BACKUP_FULL_PATH}/userdata folder."
