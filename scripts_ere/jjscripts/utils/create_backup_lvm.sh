@@ -32,7 +32,8 @@ else
 fi
 
 echo "[INFO]: Creating new backup of DevStack environment"
-mkdir -p "${BACKUP_FULL_PATH}"
+mkdir -p "${BACKUP_FULL_PATH}/rootfs"
+mkdir -p "${BACKUP_FULL_PATH}/userdata"
 echo ${BASE_DIR}
 mount "${MAPPER}${LV_CURRENT_ROOT}" "${BASE_DIR}/mnt/source_fs"
 if [ $? -eq 0 ]; then
