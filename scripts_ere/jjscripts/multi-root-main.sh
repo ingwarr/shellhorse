@@ -18,11 +18,12 @@
 #      REVISION:  ---
 #===============================================================================
 
+BASE_DIR=$(dirname "$0")
 source ${BASE_DIR}/utils/check_os.sh
 
 ############SHOULD BE REVIEWED################
 #-----------------------------------------
-BASE_DIR=$(dirname "$0")
+#BASE_DIR=$(dirname "$0")
 HOSTNAME=`hostname`
 source ${BASE_DIR}/utils/check_lvm_centos.sh
 source ${BASE_DIR}/utils/check_lvm_ubuntu.sh
