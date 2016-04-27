@@ -9,7 +9,6 @@ fi
 
 BACKUP_FULL_PATH="${BASE_DIR}/backups/${HOSTNAME}_${USER_ID}_${JOBSTAMP}"
 
-LV_POSITIONAL_ROOTS="${VG}-${LV_ROOT_FIRST} ${VG}-${LV_ROOT_SECOND}"
 LV_CURRENT_ROOT=`mount| egrep "${VG}-${LV_ROOT_STANDARD}|${VG}-${LV_ROOT_FIRST}|${VG}-${LV_ROOT_SECOND}"|grep remount-ro|awk 'BEGIN{FS="/"}{print $4}'|awk '{print $1}'`
 if [ "${LV_CURRENT_ROOT}" != "" ]; then
 	echo "[INFO]: Current root file system is ${LV_CURRENT_ROOT}"
