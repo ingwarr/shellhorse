@@ -1,10 +1,5 @@
-ERROR="\e[31m[ERROR]\e[0m:"
-INFO="\e[92m[INFO]:\e[0m:"
-
-source "../multi-root.conf"
-BACKUP_ID="cz7826_shadoff_2016-04-27-10-07"
-BASE_DIR="/opt/shellhorse/scripts_ere/jjscripts/"
-
+restore_backup_lvm()
+{
 if [ "${BACKUP_ID}" == "" ]; then
 	echo -e "${ERROR} BACKUP_ID is empty. Please check your configuration."
 	exit
@@ -73,8 +68,8 @@ else
         exit
 fi
 
-echo "[INFO]: RSYNCing $BASE_DIR/backups/${BACKUP_ID}/userdata ${USER_FOLDER}"
-rsync -av --delete "$BASE_DIR/backups/${BACKUP_ID}/userdata" ${USER_FOLDER} 1>/dev/null
+echo "[INFO]: RSYNCing $BASE_DIR/backups/${BACKUP_ID}/userdata/ ${USER_FOLDER}"
+rsync -av --delete "$BASE_DIR/backups/${BACKUP_ID}/userdata/" ${USER_FOLDER} 1>/dev/null
 if [ $? -eq 0 ]; then
         echo "[INFO]: User's data folder has been stored under ${USER_FOLDER} folder."
 else
@@ -117,8 +112,8 @@ else
 	exit
 fi
 echo "[INFO]: Server rebooting procedure has been started..."
-#reboot
-
+reboot
+}
 
 
 

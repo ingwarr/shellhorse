@@ -32,11 +32,11 @@ else
         exit
 fi
 
-if [ "${LVM2_MODULE_STATE}" == "dm_multipath" ]
-then
-        echo "[INFO]: ${LVM2_MODULE_STATE} module is loaded."
-else
-        echo "[ERROR]: ${LVM2_MODULE_STATE} module isn't loaded."
-        exit
-fi
+#if [ "${LVM2_MODULE_STATE}" == "dm_multipath" ]
+#then
+#        echo "[INFO]: ${LVM2_MODULE_STATE} module is loaded."
+#else
+#        echo "[ERROR]: ${LVM2_MODULE_STATE} module isn't loaded."
+#        exit
+#fi
 }

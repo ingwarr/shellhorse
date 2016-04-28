@@ -34,6 +34,8 @@ source ${BASE_DIR}/utils/upgrade_standard_ubuntu.sh
 source ${BASE_DIR}/utils/vg_lv_check.sh
 source ${BASE_DIR}/utils/create_backup_lvm.sh
 source ${BASE_DIR}/utils/list_backups.sh
+source ${BASE_DIR}/utils/restore_backup_lvm.sh
+
 #----------------------------------------------
 ##################################################
 
@@ -158,6 +160,7 @@ case ${JOB_MODE} in
                 ;;
   restore)
                 echo "[INFO]: Running restore mode"
+		restore_backup_lvm
                 ;;
   standard)
                 echo "[INFO]: Running standard mode"
