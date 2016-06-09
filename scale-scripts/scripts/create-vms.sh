@@ -7,7 +7,7 @@ cat << EOF > /etc/libvirt/qemu/gp.xml
 <domain type='kvm' id='6522'>
   <name>gp</name>
   <uuid>ccf363ff-a729-41f3-b9fa-b6d6acace318</uuid>
-  <memory unit='KiB'>VM_MEM</memory>
+  <memory unit='KiB'>${VM_MEM}</memory>
   <currentMemory unit='KiB'>${VM_MEM}</currentMemory>
   <vcpu placement='static'>2</vcpu>
   <resource>

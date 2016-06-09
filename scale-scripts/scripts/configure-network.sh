@@ -36,4 +36,4 @@ function block_external_dhcp {
 
 create_bridge
 disable_unused_interfaces
-block_external_dhcp
+#block_external_dhcp
