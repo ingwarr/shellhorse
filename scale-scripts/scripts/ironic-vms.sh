@@ -74,7 +74,7 @@ function enrol_vms_to_ironic {
 	;;
     esac
 
-    IRONIC_DEPLOY_KERNEL_ID=${IRONIC_DEPLOY_KERNEL_ID:-$(nova image-list|grep ${DEP_KERN}| get_field 1)}
+    IRONIC_DEPLOY_KERNEL_ID=${IRONIC_DEPLOY_KERNEL_ID:-$(nova image-list|grep ${DEP_KERNEL}| get_field 1)}
     IRONIC_DEPLOY_RAMDISK_ID=${IRONIC_DEPLOY_RAMDISK_ID:-$(nova image-list|grep ${DEP_IRAM}| get_field 1)}
 
 
