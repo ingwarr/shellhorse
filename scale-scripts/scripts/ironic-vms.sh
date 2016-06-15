@@ -1,22 +1,21 @@
 NOVA_SERVER_NAME=$1
 NOVA_SERVER_PRIV_IP=$2
-NOVA_SERVER_PUB_IP=$3
-NOVA_SERVER_PASS=${NOVA_SERVER_PASS:-'ububuntu'}
+#NOVA_SERVER_PUB_IP=$3
+#NOVA_SERVER_PASS=${NOVA_SERVER_PASS:-'ububuntu'}
 NOVA_SERVER_USER=${NOVA_SERVER_USER:-'ubuntu'}
 VM_PATTERN=${VM_PATTERN:-'clone'}
 MAC_PATTERN=${MAC_PATTERN:-'52:54'}
 INI_FILE=/tmp/$NOVA_SERVER_NAME.ini
 
-ssh_exec="sshpass -p $NOVA_SERVER_PASS ssh ${NOVA_SERVER_USER}@${NOVA_SERVER_PUB_IP}"
+ssh_exec="ssh -t -t -i ironic_key.pem ${NOVA_SERVER_USER}@${NOVA_SERVER_PUB_IP}"
 
 function get_vms_to_ini {
   local vm_names
   local vm_mac
   rm -f $INI_FILE
-  vm_names=$($ssh_exec "virsh list --all" |grep $VM_PATTERN | awk '{print $2}')
+  vm_names=$($ssh_exec "sudo virsh list --all" |grep $VM_PATTERN | awk '{print $2}')
   for vm_name in $vm_names; do
-    vm_mac=$($ssh_exec "virsh domiflist $vm_name" |grep $MAC_PATTERN |awk '{print $5}')
-    
+    vm_mac=$($ssh_exec "sudo virsh domiflist $vm_name" |grep $MAC_PATTERN |awk '{print $5}')
     echo "[${NOVA_SERVER_NAME}-${vm_name}]" >> $INI_FILE
     echo "mac_address=$vm_mac" >> $INI_FILE
     echo "libvirt_uri=qemu+tcp://${NOVA_SERVER_PRIV_IP}/system" >> $INI_FILE
@@ -26,16 +25,13 @@ function get_vms_to_ini {
 }
 
 DEFAULT_CPU_ARCH='x86_64'
-DEFAULT_RAM='1024'
-DEFAULT_CPU='1'
+DEFAULT_RAM='2048'
+DEFAULT_CPU='2'
 DEFAULT_DIK='8'
-IRONIC_DEPLOY_DRIVER=${IRONIC_DEPLOY_DRIVER:-'fuel_libvirt'}
+IRONIC_DEPLOY_DRIVER=${IRONIC_DEPLOY_DRIVER:-'ansible_libvirt'}
 
 source ./inc/helpers.sh
 
-IRONIC_DEPLOY_KERNEL_ID=${IRONIC_DEPLOY_KERNEL_ID:-$(nova image-list|grep ironic-deploy-linux| get_field 1)}
-IRONIC_DEPLOY_RAMDISK_ID=${IRONIC_DEPLOY_RAMDISK_ID:-$(nova image-list|grep ironic-deploy-initramfs| get_field 1)}
-IRONIC_DEPLOY_SQUASHFS=${IRONIC_DEPLOY_SQUASHFS:-$(nova image-list|grep ironic-deploy-squashfs| get_field 1)}
 
 DEPLOY_KEY_FILE='/etc/ironic/deploy_key'
 
@@ -51,14 +47,35 @@ function enrol_vms_to_ironic {
 
     case $IRONIC_DEPLOY_DRIVER in
         "fuel_libvirt")
-        ;;
+	    DEP_KERNEL="ironic-deploy-linux"
+	    DEP_IRAM="ironic-deploy-initramfs"
+#	    DEP_SQUA="ironic-deploy-squashfs"
+            IRONIC_DEPLOY_SQUASHFS=${IRONIC_DEPLOY_SQUASHFS:-$(nova image-list|grep ironic-deploy-squashfs| get_field 1)}
+            node_options=" \
+             -i deploy_squashfs=$IRONIC_DEPLOY_SQUASHFS \
+            " 
+            ;;
         "ansible_libvirt")
-        local node_options
+            local node_options
+	    DEP_KERNEL="ansible-deploy-linux"
+	    DEP_IRAM="ansible-deploy-initramfs"
         node_options=" \
           -i deploy_key_file=$DEPLOY_KEY_FILE
         "
         ;;
+	"ipa_libvirt")
+#            local node_options
+	    DEP_KERNEL="ipa-deploy-linux"
+	    DEP_IRAM="ipa-deploy-initramfs"
+#        node_options=" \
+#          -i deploy_key_file=$DEPLOY_KEY_FILE
+#        "
+	;;
     esac
+
+    IRONIC_DEPLOY_KERNEL_ID=${IRONIC_DEPLOY_KERNEL_ID:-$(nova image-list|grep ${DEP_KERN}| get_field 1)}
+    IRONIC_DEPLOY_RAMDISK_ID=${IRONIC_DEPLOY_RAMDISK_ID:-$(nova image-list|grep ${DEP_IRAM}| get_field 1)}
+
 
     mac_address=$(iniget $INI_FILE $node_name mac_address)
     cpus=$(iniget $INI_FILE $node_name cpus)
@@ -82,7 +99,6 @@ function enrol_vms_to_ironic {
       -p cpu_arch=${cpu_arch} \
       -i deploy_kernel=$IRONIC_DEPLOY_KERNEL_ID \
       -i deploy_ramdisk=$IRONIC_DEPLOY_RAMDISK_ID \
-      -i deploy_squashfs=$IRONIC_DEPLOY_SQUASHFS \
       -i libvirt_uri=${libvirt_uri} \
       $node_options | grep -w "uuid" | get_field 2)
     echo "Created node $node_name [cpus: $cpus, ram: $memory_mb, disk: $local_gb, arch: $cpu_arch]"
