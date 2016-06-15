@@ -1,3 +1,5 @@
+#!/bin/bash
+
 BAREMETAL_NETWORK=${BAREMETAL_NETWORK:-'192.168.16.0/20'}
 
 function create_bridge {

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function configure_libvirt {
 cat << EOF > /etc/default/libvirtd
 start_libvirtd="yes"

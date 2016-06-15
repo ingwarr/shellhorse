@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function create_gp_vm {
 
 VM_MEM=${VM_MEM:-'2097152'}
