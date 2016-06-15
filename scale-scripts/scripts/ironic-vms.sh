@@ -7,7 +7,7 @@ VM_PATTERN=${VM_PATTERN:-'clone'}
 MAC_PATTERN=${MAC_PATTERN:-'52:54'}
 INI_FILE=/tmp/$NOVA_SERVER_NAME.ini
 
-ssh_exec="ssh -t -t -i ironic_key.pem ${NOVA_SERVER_USER}@${NOVA_SERVER_PRIV_IP}"
+ssh_exec="ssh -t -t -i /root/ironic_key.pem ${NOVA_SERVER_USER}@${NOVA_SERVER_PRIV_IP}"
 
 function get_vms_to_ini {
   local vm_names
