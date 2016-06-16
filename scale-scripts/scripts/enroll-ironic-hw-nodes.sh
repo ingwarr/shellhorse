@@ -1,20 +1,22 @@
+#!/bin/bash
+
 HARDWARE_NODES_FILE=${HARDWARE_NODES_FILE:-'/root/hardware-nodes.ini'}
 DEFAULT_CPU_ARCH='x86_64'
 DEFAULT_RAM='32768'
 DEFAULT_CPU='12'
 DEFAULT_DIK='128'
 DEFAULT_IPMI_USERNAME='engineer'
-IRONIC_DEPLOY_DRIVER='fuel_ipmitool'
+#IRONIC_DEPLOY_DRIVER='fuel_ipmitool'
 
 source ./inc/helpers.sh
 
-IRONIC_DEPLOY_KERNEL_ID=$(nova image-list|grep ironic-deploy-linux| get_field 1)
-IRONIC_DEPLOY_RAMDISK_ID=$(nova image-list|grep ironic-deploy-initramfs| get_field 1)
-IRONIC_DEPLOY_SQUASHFS=$(nova image-list|grep ironic-deploy-squashfs| get_field 1)
+IRONIC_DEPLOY_DRIVER=${IRONIC_DEPLOY_DRIVER:-'ansible_libvirt'}
+DEPLOY_KEY_FILE='/etc/ironic/deploy_key'
+DEPLOY_USER_NAME='devuser'
 
 function enroll_nodes {
-  ironic_nodes=$(iniget_sections "$HARDWARE_NODES_FILE")
-  for node_name in $ironic_nodes; do
+  ironic_nodes=$(iniget_sections "${HARDWARE_NODES_FILE}")
+  for node_name in ${ironic_nodes}; do
     local mac_address
     local cpus
     local memory_mb
@@ -23,17 +25,46 @@ function enroll_nodes {
     local ipmi_address
     local ipmi_username
     local ipmi_password
+    case ${IRONIC_DEPLOY_DRIVER} in
+        "fuel_libvirt")
+	    DEP_KERNEL="ironic-deploy-linux"
+	    DEP_IRAM="ironic-deploy-initramfs"
+            IRONIC_DEPLOY_SQUASHFS=${IRONIC_DEPLOY_SQUASHFS:-$(nova image-list|grep ironic-deploy-squashfs| get_field 1)}
+            driver_options=" \
+             -i deploy_squashfs=${IRONIC_DEPLOY_SQUASHFS} \
+            " 
+            ;;
+        "ansible_libvirt")
+            local node_options
+	    DEP_KERNEL="ansible-deploy-linux"
+	    DEP_IRAM="ansible-deploy-initramfs"
+        driver_options=" \
+          -i deploy_key_file=${DEPLOY_KEY_FILE} -i deploy_username=${DEPLOY_USER_NAME}
+        "
+        ;;
+	"ipa_libvirt")
+#            local node_options
+	    DEP_KERNEL="ipa-deploy-linux"
+	    DEP_IRAM="ipa-deploy-initramfs"
+#        node_options=" \
+#          -i deploy_key_file=$DEPLOY_KEY_FILE
+#        "
+	;;
+    esac
+
+    IRONIC_DEPLOY_KERNEL_ID=${IRONIC_DEPLOY_KERNEL_ID:-$(nova image-list|grep ${DEP_KERNEL}| get_field 1)}
+    IRONIC_DEPLOY_RAMDISK_ID=${IRONIC_DEPLOY_RAMDISK_ID:-$(nova image-list|grep ${DEP_IRAM}| get_field 1)}
 
     # Common parameters for VM and HW nodes
-    mac_address=$(iniget $HARDWARE_NODES_FILE $node_name mac_address)
-    cpus=$(iniget $HARDWARE_NODES_FILE $node_name cpus)
-    cpu_arch=$(iniget $HARDWARE_NODES_FILE $node_name cpu_arch)
-    memory_mb=$(iniget $HARDWARE_NODES_FILE $node_name memory_mb)
-    local_gb=$(iniget $HARDWARE_NODES_FILE $node_name local_gb)
+    mac_address=$(iniget ${HARDWARE_NODES_FILE} ${node_name} mac_address)
+    cpus=$(iniget ${HARDWARE_NODES_FILE} ${node_name} cpus)
+    cpu_arch=$(iniget ${HARDWARE_NODES_FILE} ${node_name} cpu_arch)
+    memory_mb=$(iniget ${HARDWARE_NODES_FILE} ${node_name} memory_mb)
+    local_gb=$(iniget ${HARDWARE_NODES_FILE} ${node_name} local_gb)
 
-    ipmi_address=$(iniget $HARDWARE_NODES_FILE $node_name ipmi_address)
-    ipmi_username=$(iniget $HARDWARE_NODES_FILE $node_name ipmi_username)
-    ipmi_password=$(iniget $HARDWARE_NODES_FILE $node_name ipmi_password)
+    ipmi_address=$(iniget ${HARDWARE_NODES_FILE} ${node_name} ipmi_address)
+    ipmi_username=$(iniget ${HARDWARE_NODES_FILE} ${node_name} ipmi_username)
+    ipmi_password=$(iniget ${HARDWARE_NODES_FILE} ${node_name} ipmi_password)
 
     # Override empty values with defaults
     cpus=${cpus:-${DEFAULT_CPU}}
@@ -54,14 +85,14 @@ function enroll_nodes {
       -p memory_mb=${memory_mb} \
       -p local_gb=${local_gb} \
       -p cpu_arch=${cpu_arch} \
-      -i deploy_kernel=$IRONIC_DEPLOY_KERNEL_ID \
-      -i deploy_ramdisk=$IRONIC_DEPLOY_RAMDISK_ID \
-      -i deploy_squashfs=$IRONIC_DEPLOY_SQUASHFS \
-      $node_options | grep -w "uuid" | get_field 2)
-    echo "Created node $node_name [cpus: $cpus, ram: $memory_mb, disk: $local_gb, arch: $cpu_arch]"
+      -i deploy_kernel=${IRONIC_DEPLOY_KERNEL_ID} \
+      -i deploy_ramdisk=${IRONIC_DEPLOY_RAMDISK_ID} \
+      -i deploy_squashfs=${IRONIC_DEPLOY_SQUASHFS} \
+      ${node_options} ${driver_options}| grep -w "uuid" | get_field 2)
+    echo "Created node ${node_name} [cpus: ${cpus}, ram: ${memory_mb}, disk: ${local_gb}, arch: ${cpu_arch}]"
 
-    ironic port-create --address $mac_address --node $node_id
-    echo "Created port with mac: $mac_address for node $node_name"
+    ironic port-create --address ${mac_address} --node ${node_id}
+    echo "Created port with mac: ${mac_address} for node ${node_name}"
 
   done
 }
