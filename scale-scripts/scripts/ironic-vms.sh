@@ -3,24 +3,26 @@ NOVA_SERVER_NAME=$1
 NOVA_SERVER_PRIV_IP=$2
 #NOVA_SERVER_PUB_IP=$3
 #NOVA_SERVER_PASS=${NOVA_SERVER_PASS:-'ububuntu'}
-NOVA_SERVER_USER=${NOVA_SERVER_USER:-'ubuntu'}
+#NOVA_SERVER_USER=${NOVA_SERVER_USER:-'ubuntu'}
 VM_PATTERN=${VM_PATTERN:-'clone'}
 MAC_PATTERN=${MAC_PATTERN:-'52:54'}
 INI_FILE=/tmp/$NOVA_SERVER_NAME.ini
 
-ssh_exec="ssh -t -t -i /root/ironic_key.pem ${NOVA_SERVER_USER}@${NOVA_SERVER_PRIV_IP}"
+#ssh_exec="ssh -t -t -i /root/ironic_key.pem ${NOVA_SERVER_USER}@${NOVA_SERVER_PRIV_IP}"
+virsh_exec="virsh -c qemu+tcp://${NOVA_SERVER_PRIV_IP}/system"
 
 function get_vms_to_ini {
   local vm_names
   local vm_mac
   rm -f $INI_FILE
-  vm_names=$($ssh_exec "sudo virsh list --all" |grep $VM_PATTERN | awk '{print $2}')
-  for vm_name in $vm_names; do
-    vm_mac=$($ssh_exec "sudo virsh domiflist $vm_name" |grep $MAC_PATTERN |awk '{print $5}')
-    echo "[${NOVA_SERVER_NAME}-${vm_name}]" >> $INI_FILE
-    echo "mac_address=$vm_mac" >> $INI_FILE
-    echo "libvirt_uri=qemu+tcp://${NOVA_SERVER_PRIV_IP}/system" >> $INI_FILE
-    echo '' >> $INI_FILE
+  vm_names=$(${virsh_exec} list --all|grep $VM_PATTERN | awk '{print $2}')
+  for vm_name in ${vm_names}
+    do
+      vm_mac=$(${virsh_exec} domiflist ${vm_name}|grep ${MAC_PATTERN} |awk '{print $5}')
+      echo "[${NOVA_SERVER_NAME}-${vm_name}]" >> $INI_FILE
+      echo "mac_address=${vm_mac}" >> $INI_FILE
+      echo "libvirt_uri=qemu+tcp://${NOVA_SERVER_PRIV_IP}/system" >> $INI_FILE
+      echo '' >> $INI_FILE
   done
 
 }
