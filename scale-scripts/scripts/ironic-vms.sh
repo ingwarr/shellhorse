@@ -37,7 +37,7 @@ source ./inc/helpers.sh
 
 
 DEPLOY_KEY_FILE='/etc/ironic/deploy_key'
-
+DEPLOY_USER_NAME='devuser'
 function enrol_vms_to_ironic {
   ironic_nodes=$(iniget_sections "$INI_FILE")
   for node_name in $ironic_nodes; do
@@ -63,7 +63,7 @@ function enrol_vms_to_ironic {
 	    DEP_KERNEL="ansible-deploy-linux"
 	    DEP_IRAM="ansible-deploy-initramfs"
         node_options=" \
-          -i deploy_key_file=$DEPLOY_KEY_FILE
+          -i deploy_key_file=$DEPLOY_KEY_FILE -i deploy_username=${DEPLOY_USER_NAME}
         "
         ;;
 	"ipa_libvirt")
