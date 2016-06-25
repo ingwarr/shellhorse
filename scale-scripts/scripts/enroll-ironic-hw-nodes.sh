@@ -6,11 +6,11 @@ DEFAULT_RAM='32768'
 DEFAULT_CPU='12'
 DEFAULT_DIK='128'
 DEFAULT_IPMI_USERNAME='engineer'
-#IRONIC_DEPLOY_DRIVER='fuel_ipmitool'
+IRONIC_DEPLOY_DRIVER='fuel_ipmitool'
 
 source ./inc/helpers.sh
 
-IRONIC_DEPLOY_DRIVER=${IRONIC_DEPLOY_DRIVER:-'ansible_libvirt'}
+IRONIC_DEPLOY_DRIVER=${IRONIC_DEPLOY_DRIVER:-'fuel_ipmitool'}
 DEPLOY_KEY_FILE='/etc/ironic/deploy_key'
 DEPLOY_USER_NAME='devuser'
 
@@ -26,7 +26,7 @@ function enroll_nodes {
     local ipmi_username
     local ipmi_password
     case ${IRONIC_DEPLOY_DRIVER} in
-        "fuel_libvirt")
+        "fuel_ipmitool")
 	    DEP_KERNEL="ironic-deploy-linux"
 	    DEP_IRAM="ironic-deploy-initramfs"
             IRONIC_DEPLOY_SQUASHFS=${IRONIC_DEPLOY_SQUASHFS:-$(nova image-list|grep ironic-deploy-squashfs| get_field 1)}
@@ -34,7 +34,7 @@ function enroll_nodes {
              -i deploy_squashfs=${IRONIC_DEPLOY_SQUASHFS} \
             " 
             ;;
-        "ansible_libvirt")
+        "ansible_ipmitool")
             local node_options
 	    DEP_KERNEL="ansible-deploy-linux"
 	    DEP_IRAM="ansible-deploy-initramfs"
@@ -42,7 +42,7 @@ function enroll_nodes {
           -i deploy_key_file=${DEPLOY_KEY_FILE} -i deploy_username=${DEPLOY_USER_NAME}
         "
         ;;
-	"ipa_libvirt")
+	"agent_ipmitool")
 #            local node_options
 	    DEP_KERNEL="ipa-deploy-linux"
 	    DEP_IRAM="ipa-deploy-initramfs"
