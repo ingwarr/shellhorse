@@ -69,9 +69,9 @@ for IR_NODE in ${IR_NODES}
 
 choose_method
 #TEST:
-IRONIC_KERNEL_IMAGE=$(nova image-list|grep ${DEP_KERNEL}| get_field 1)
-IRONIC_DEPLOY_RAMDISK_ID=$(nova image-list|grep ${DEP_IRAM}| get_field 1)
-echo "add ${TO_ADD} "
-echo "replace driver=${CHANGE_TO} driver_info/deploy_kernel=${IRONIC_KERNEL_IMAGE} driver_info/deploy_ramdisk=${IRONIC_DEPLOY_RAMDISK_ID}"
-echo "remove ${TO_REMOVE}"
-#implement_updates
+# IRONIC_KERNEL_IMAGE=$(nova image-list|grep ${DEP_KERNEL}| get_field 1)
+# IRONIC_DEPLOY_RAMDISK_ID=$(nova image-list|grep ${DEP_IRAM}| get_field 1)
+# echo "add ${TO_ADD} "
+# echo "replace driver=${CHANGE_TO} driver_info/deploy_kernel=${IRONIC_KERNEL_IMAGE} driver_info/deploy_ramdisk=${IRONIC_DEPLOY_RAMDISK_ID}"
+# echo "remove ${TO_REMOVE}"
+implement_updates
