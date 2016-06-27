@@ -62,8 +62,8 @@ IR_NODES=`ironic node-list|awk '/available/ {print $2}'`
 for IR_NODE in ${IR_NODES}
     do
 	if [ ${TO_ADD} != "0" ]; then ironic node-update ${IR_NODE} add ${TO_ADD} ; fi
-	ironic node-update ${IR_NODE} replace driver=ansible_ipmitool driver_info/deploy_kernel=${IRONIC_KERNEL_IMAGE} driver_info/deploy_ramdisk=${IRONIC_DEPLOY_RAMDISK_ID}
-        if [ ${TO_REMOVE} != "0" ]; then ironic node-update ${IR_NODE} remove ${TO_REMOVE}
+	ironic node-update ${IR_NODE} replace driver=${CHANGE_TO} driver_info/deploy_kernel=${IRONIC_KERNEL_IMAGE} driver_info/deploy_ramdisk=${IRONIC_DEPLOY_RAMDISK_ID}
+        if [ ${TO_REMOVE} != "0" ]; then ironic node-update ${IR_NODE} remove ${TO_REMOVE}; fi
     done
 }
 
